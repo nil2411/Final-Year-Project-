@@ -9,9 +9,22 @@ venv/
 ENV/
 .venv
 
+# Node
+node_modules/
+
 # Environment
 .env
 .env.local
+
+
+# Data (IMPORTANT)
+backend/data/docs/
+backend/data/fertilizer_dataset/
+backend/data/crop_dataset/
+backend/data/Plant_leaf_diseases_dataset_without_augmentation/
+
+# Uploads
+backend/uploads/
 
 # Vector DB
 data/faiss_index/
