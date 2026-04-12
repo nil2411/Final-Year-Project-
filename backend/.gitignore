@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.pyc
+.env
+
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+
+# Database
+*.db
+*.sqlite
+
+# Uploaded images — these are local only
+static/equipment_images/
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.production
+
+
+# Data (IMPORTANT)
+backend/data/
+
+# Uploads
+backend/uploads/
+
+# Vector DB
+data/faiss_index/
+data/chroma_db/
+
+# Audio files
+static/audio/*.mp3
+static/audio/*.wav
+static/audio/*.m4a
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Model cache
+.cache/
+models/
+
