@@ -21,28 +21,22 @@ export interface Booking {
   equipment_image?: string;
 }
 
+const headers = (userId: string) => ({ 'X-User-Id': userId });
 
-// Remove TEMP_USER_ID — now uses real JWT token
-const getHeaders = (token: string) => ({
-  'Authorization': `Bearer ${token}`,
-  'Content-Type': 'application/json',
-});
+// ── FARMER ──────────────────────────────────────────
 
-const getBearerHeader = (token: string) => ({
-  'Authorization': `Bearer ${token}`,
-});
 export async function getAllEquipment(): Promise<Equipment[]> {
   const res = await fetch(`${API_BASE_URL}/api/rental/equipment`);
   if (!res.ok) throw new Error('Failed to fetch equipment');
   return (await res.json()).data;
 }
 
-export async function createBooking(token: string, payload: {
+export async function createBooking(userId: string, payload: {
   equipment_id: string; start_time: string; end_time: string;
 }): Promise<Booking> {
   const res = await fetch(`${API_BASE_URL}/api/rental/book`, {
     method: 'POST',
-    headers: getHeaders(token),
+    headers: { 'Content-Type': 'application/json', ...headers(userId) },
     body: JSON.stringify(payload),
   });
   const data = await res.json();
@@ -50,44 +44,40 @@ export async function createBooking(token: string, payload: {
   return data.data;
 }
 
-export async function getMyBookings(token: string): Promise<Booking[]> {
-  const res = await fetch(`${API_BASE_URL}/api/rental/bookings`, {
-    headers: getBearerHeader(token),
-  });
+export async function getMyBookings(userId: string): Promise<Booking[]> {
+  const res = await fetch(`${API_BASE_URL}/api/rental/bookings`, { headers: headers(userId) });
   if (!res.ok) throw new Error('Failed to fetch bookings');
   return (await res.json()).data;
 }
 
-export async function getBookingHistory(token: string): Promise<Booking[]> {
-  const res = await fetch(`${API_BASE_URL}/api/rental/bookings/history`, {
-    headers: getBearerHeader(token),
-  });
+export async function getBookingHistory(userId: string): Promise<Booking[]> {
+  const res = await fetch(`${API_BASE_URL}/api/rental/bookings/history`, { headers: headers(userId) });
   if (!res.ok) throw new Error('Failed to fetch history');
   return (await res.json()).data;
 }
 
-export async function cancelBooking(token: string, bookingId: string): Promise<Booking> {
+export async function cancelBooking(userId: string, bookingId: string): Promise<Booking> {
   const res = await fetch(`${API_BASE_URL}/api/rental/book/${bookingId}`, {
     method: 'DELETE',
-    headers: getBearerHeader(token),
+    headers: headers(userId),
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.detail || 'Failed to cancel');
   return data.data;
 }
 
-export async function getVendorEquipment(token: string): Promise<Equipment[]> {
-  const res = await fetch(`${API_BASE_URL}/api/rental/vendor/equipment`, {
-    headers: getBearerHeader(token),
-  });
+// ── VENDOR ──────────────────────────────────────────
+
+export async function getVendorEquipment(userId: string): Promise<Equipment[]> {
+  const res = await fetch(`${API_BASE_URL}/api/rental/vendor/equipment`, { headers: headers(userId) });
   if (!res.ok) throw new Error('Failed to fetch vendor equipment');
   return (await res.json()).data;
 }
 
-export async function addEquipment(token: string, formData: FormData): Promise<Equipment> {
+export async function addEquipment(userId: string, formData: FormData): Promise<Equipment> {
   const res = await fetch(`${API_BASE_URL}/api/rental/vendor/equipment`, {
     method: 'POST',
-    headers: getBearerHeader(token),
+    headers: headers(userId),
     body: formData,
   });
   const data = await res.json();
@@ -95,10 +85,10 @@ export async function addEquipment(token: string, formData: FormData): Promise<E
   return data.data;
 }
 
-export async function updateEquipment(token: string, equipmentId: string, formData: FormData): Promise<Equipment> {
+export async function updateEquipment(userId: string, equipmentId: string, formData: FormData): Promise<Equipment> {
   const res = await fetch(`${API_BASE_URL}/api/rental/vendor/equipment/${equipmentId}`, {
     method: 'PUT',
-    headers: getBearerHeader(token),
+    headers: headers(userId),
     body: formData,
   });
   const data = await res.json();
@@ -106,20 +96,23 @@ export async function updateEquipment(token: string, equipmentId: string, formDa
   return data.data;
 }
 
-export async function deleteEquipment(token: string, equipmentId: string): Promise<void> {
+export async function deleteEquipment(userId: string, equipmentId: string): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/api/rental/vendor/equipment/${equipmentId}`, {
     method: 'DELETE',
-    headers: getBearerHeader(token),
+    headers: headers(userId),
   });
   if (!res.ok) throw new Error('Failed to delete equipment');
 }
 
-export async function getVendorBookings(token: string): Promise<Booking[]> {
-  const res = await fetch(`${API_BASE_URL}/api/rental/vendor/bookings`, {
-    headers: getBearerHeader(token),
-  });
+export async function getVendorBookings(userId: string): Promise<Booking[]> {
+  const res = await fetch(`${API_BASE_URL}/api/rental/vendor/bookings`, { headers: headers(userId) });
   if (!res.ok) throw new Error('Failed to fetch vendor bookings');
   return (await res.json()).data;
+}
+
+export interface BookedSlot {
+  start_time: string;
+  end_time: string;
 }
 
 export async function getEquipmentAvailability(equipmentId: string): Promise<BookedSlot[]> {
