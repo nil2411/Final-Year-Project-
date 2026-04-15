@@ -12,20 +12,10 @@ UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "static", "equipment_
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-from services.auth_service import get_current_user
-
-async def get_user(authorization: Optional[str] = None) -> str:
-    """Extract user ID from JWT token"""
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Please login to continue")
-
-    token = authorization.replace("Bearer ", "")
-    user = await get_current_user(token)
-
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid or expired token. Please login again.")
-
-    return user["_id"]
+def get_user(x_user_id: Optional[str] = None) -> str:
+    if not x_user_id:
+        raise HTTPException(status_code=401, detail="X-User-Id header required")
+    return x_user_id
 
 
 # ─── FARMER ENDPOINTS ────────────────────────────────────────────────
@@ -41,9 +31,9 @@ async def get_all_equipment():
 
 
 @router.post("/book")
-async def create_booking(payload: BookingCreateSchema, authorization: Optional[str] = Header(None)):
+async def create_booking(payload: BookingCreateSchema, x_user_id: Optional[str] = Header(None)):
     """Farmer books equipment"""
-    user_id = await get_user(authorization)
+    user_id = get_user(x_user_id)
     try:
         booking = await rental_service.create_booking(
             user_id, payload.equipment_id, payload.start_time, payload.end_time
@@ -60,9 +50,9 @@ async def create_booking(payload: BookingCreateSchema, authorization: Optional[s
 
 
 @router.get("/bookings")
-async def get_active_bookings(authorization: Optional[str] = Header(None)):
+async def get_active_bookings(x_user_id: Optional[str] = Header(None)):
     """Get farmer's active bookings"""
-    user_id = await get_user(authorization)
+    user_id = get_user(x_user_id)
     try:
         bookings = await rental_service.get_active_bookings(user_id)
         return {"success": True, "message": "Active bookings fetched", "data": bookings}
@@ -71,9 +61,9 @@ async def get_active_bookings(authorization: Optional[str] = Header(None)):
 
 
 @router.get("/bookings/history")
-async def get_booking_history(authorization: Optional[str] = Header(None)):
+async def get_booking_history(x_user_id: Optional[str] = Header(None)):
     """Get farmer's full booking history"""
-    user_id = await get_user(authorization)
+    user_id = get_user(x_user_id)
     try:
         bookings = await rental_service.get_booking_history(user_id)
         return {"success": True, "message": "History fetched", "data": bookings}
@@ -82,9 +72,9 @@ async def get_booking_history(authorization: Optional[str] = Header(None)):
 
 
 @router.delete("/book/{booking_id}")
-async def cancel_booking(booking_id: str, authorization: Optional[str] = Header(None)):
+async def cancel_booking(booking_id: str, x_user_id: Optional[str] = Header(None)):
     """Cancel a booking"""
-    user_id = await get_user(authorization)
+    user_id = get_user(x_user_id)
     try:
         booking = await rental_service.cancel_booking(booking_id, user_id)
         return {"success": True, "message": "Booking cancelled", "data": booking}
@@ -99,9 +89,9 @@ async def cancel_booking(booking_id: str, authorization: Optional[str] = Header(
 # ─── VENDOR ENDPOINTS ────────────────────────────────────────────────
 
 @router.get("/vendor/equipment")
-async def get_vendor_equipment(authorization: Optional[str] = Header(None)):
+async def get_vendor_equipment(x_user_id: Optional[str] = Header(None)):
     """Get all equipment added by this vendor"""
-    vendor_id = await get_user(authorization)
+    vendor_id = get_user(x_user_id)
     try:
         equipment = await rental_service.get_vendor_equipment(vendor_id)
         return {"success": True, "message": "Vendor equipment fetched", "data": equipment}
@@ -115,10 +105,10 @@ async def add_equipment(
     type: str = Form(...),
     price_per_hour: float = Form(...),
     image: Optional[UploadFile] = File(None),
-    authorization: Optional[str] = Header(None)
+    x_user_id: Optional[str] = Header(None)
 ):
     """Vendor adds new equipment with optional image"""
-    vendor_id = await get_user(authorization)
+    vendor_id = get_user(x_user_id)
     try:
         image_url = None
 
@@ -146,10 +136,10 @@ async def update_equipment(
     type: Optional[str] = Form(None),
     price_per_hour: Optional[float] = Form(None),
     image: Optional[UploadFile] = File(None),
-    authorization: Optional[str] = Header(None)
+    x_user_id: Optional[str] = Header(None)
 ):
     """Vendor updates their equipment"""
-    vendor_id = await get_user(authorization)
+    vendor_id = get_user(x_user_id)
     try:
         updates = {}
         if name: updates["name"] = name
@@ -173,9 +163,9 @@ async def update_equipment(
 
 
 @router.delete("/vendor/equipment/{equipment_id}")
-async def delete_equipment(equipment_id: str, authorization: Optional[str] = Header(None)):
+async def delete_equipment(equipment_id: str, x_user_id: Optional[str] = Header(None)):
     """Vendor deletes their equipment"""
-    vendor_id = await get_user(authorization)
+    vendor_id = get_user(x_user_id)
     try:
         await rental_service.delete_equipment(equipment_id, vendor_id)
         return {"success": True, "message": "Equipment deleted", "data": None}
@@ -186,15 +176,15 @@ async def delete_equipment(equipment_id: str, authorization: Optional[str] = Hea
 
 
 @router.get("/vendor/bookings")
-async def get_vendor_bookings(authorization: Optional[str] = Header(None)):
+async def get_vendor_bookings(x_user_id: Optional[str] = Header(None)):
     """Vendor sees all bookings on their equipment"""
-    vendor_id = await get_user(authorization)
+    vendor_id = get_user(x_user_id)
     try:
         bookings = await rental_service.get_vendor_bookings(vendor_id)
         return {"success": True, "message": "Vendor bookings fetched", "data": bookings}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+    
 @router.get("/equipment/{equipment_id}/availability")
 async def get_equipment_availability(equipment_id: str):
     """Get all booked time slots for a specific equipment"""
