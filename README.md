@@ -19,7 +19,7 @@ KrushiSaathi is a final year project — an AI-powered platform to assist Indian
 Final Year Project — KrushiSaathi
 Department of Information Technology
 
-**Team Members**
+**Team Members :**
 
 Nilesh Shete
 
