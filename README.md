@@ -11,7 +11,7 @@ KrushiSaathi is a final year project — an AI-powered platform to assist Indian
 - 🚜 **Equipment Rental System** — Farmers can browse and book equipment; Vendors can list their equipment
 - 🌿 **Crop Health** — Upload crop images and get disease detection
 - 💊 **Fertilizer Advisor** — Get fertilizer recommendations based on crop and soil
-- 📋 **Government Schemes** — Browse relevant government schemes for farmers
+- 📋 **Government Schemes** — Browse relevant government schemes for farmersa
 
 ---
 ## 👥 Team
@@ -19,11 +19,16 @@ KrushiSaathi is a final year project — an AI-powered platform to assist Indian
 Final Year Project — KrushiSaathi
 Department of Information Technology
 
-Team of 4: 
-1.Nilesh Shete
-2.Sayali shete
-3.Shrushti Waghmare
-4.Snehil Rai
+**Team Members**
+
+Nilesh Shete
+
+Sayali Shete
+
+Shrushti Waghmare
+
+Snehil Rai
+
 ---
 
 
