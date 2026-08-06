@@ -14,6 +14,17 @@ KrushiSaathi is a final year project — an AI-powered platform to assist Indian
 - 📋 **Government Schemes** — Browse relevant government schemes for farmers
 
 ---
+## 👥 Team
+
+Final Year Project — KrushiSaathi
+Department of Information Technology
+Team of 4: 
+1.Nilesh Shete
+2.Sayali shete
+3.Shrushti Waghmare
+4.Snehil Rai
+---
+
 
 ## 🛠️ Tech Stack
 
@@ -231,13 +242,6 @@ http://localhost:8000/docs
 
 - The MongoDB Atlas database is shared across all team members
 - All team members must create their own `.env` file with the shared credentials
-
----
-
-## 👥 Team
-
-Final Year Project — KrushiSaathi
-Department of Information Technology
 
 ---
 
